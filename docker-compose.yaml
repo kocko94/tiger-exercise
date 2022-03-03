@@ -1,0 +1,37 @@
+version: '2.4'
+
+services:
+  tiger-exercise:
+    build:
+      context: .
+    container_name: "tiger-exercise"
+    mem_limit: 2gb
+    cpu_count: 2
+    cpu_percent: 50
+    cpus: 0.50
+    volumes:
+      - .:/code/
+      - /code/node_modules
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "5m"
+    expose:
+      - "10345"
+    labels:
+      # Docker part
+      - traefik.enable=true
+      # Hosting part
+      - traefik.http.routers.tiger-exercise.rule=Host(`tiger.kvankov.com`)
+      - traefik.http.routers.tiger-exercise.entrypoints=websecure
+      - traefik.http.routers.tiger-exercise.tls=true
+      - traefik.http.routers.tiger-exercise.tls.certresolver=le
+      # Which docker network name to use for the communication
+      - traefik.docker.network=web
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
